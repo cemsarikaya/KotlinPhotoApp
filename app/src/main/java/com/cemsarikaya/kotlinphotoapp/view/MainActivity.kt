@@ -1,8 +1,7 @@
-package com.cemsarikaya.kotlinphotoapp
-
+package com.cemsarikaya.kotlinphotoapp.view
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -17,21 +16,26 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.cemsarikaya.kotlinphotoapp.R
 import com.cemsarikaya.kotlinphotoapp.adapter.ThumbnailAdapter
 import com.cemsarikaya.kotlinphotoapp.databinding.ActivityMainBinding
+import com.cemsarikaya.kotlinphotoapp.model.MySingleton
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var imageCapture: ImageCapture? = null
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
-    private var mArrayUri : ArrayList<Uri>?=null
+   // private var mArrayUri : ArrayList<Uri>?=null
     private lateinit var imagesAdapter : ThumbnailAdapter
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,20 +44,17 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
         supportActionBar?.hide()
-        mArrayUri = ArrayList()
+        MySingleton.mArrayUri = ArrayList()
         if (allPermissionsGranted()) {
             startCamera()
         } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
-
-
-
         binding.cameraCaptureButton.setOnClickListener {
             takePhoto()
-
         }
+
 
         outputDirectory = getOutputDirectory()
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -62,11 +63,10 @@ class MainActivity : AppCompatActivity() {
     private fun takePhoto() {
 
         val imageCapture = imageCapture ?: return
+
         val photoFile = File(
             outputDirectory,
-            SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".jpg"
-        )
-
+            System.currentTimeMillis().toString() + ".jpg")
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
@@ -77,14 +77,10 @@ class MainActivity : AppCompatActivity() {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                 }
-
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = Uri.fromFile(photoFile)
-                    mArrayUri!!.add(savedUri)
-                    val gridLayout = LinearLayoutManager(baseContext, LinearLayoutManager.HORIZONTAL,false)
-                    imagesAdapter = ThumbnailAdapter(mArrayUri!!,baseContext)
-                    binding.recyclerView.layoutManager = gridLayout
-                    binding.recyclerView.adapter = imagesAdapter
+                    MySingleton.mArrayUri!!.add(savedUri)
+                    createLinearLayoutView()
 
 
                 }
@@ -111,7 +107,6 @@ class MainActivity : AppCompatActivity() {
             //ön, arka kamera değiştirme
             binding.frontBackButton.setOnClickListener {
                 bool = !bool
-                print(bool)
                 if (bool == true){
                     cameraProvider.unbindAll()
                     cameraProvider.bindToLifecycle(
@@ -164,15 +159,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun goToGalleryButton(view:View){
+        val intent = Intent(this, GalleryActivity::class.java)
+        startActivity(intent)
 
-
+    }
+    fun createLinearLayoutView(){
+        val gridLayout = LinearLayoutManager(baseContext, LinearLayoutManager.HORIZONTAL,false)
+        imagesAdapter = ThumbnailAdapter(MySingleton.mArrayUri!!,baseContext)
+        binding.recyclerView.layoutManager = gridLayout
+        binding.recyclerView.adapter = imagesAdapter
     }
 
     companion object {
         private const val TAG = "CameraXGFG"
-        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 20
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        createLinearLayoutView()
     }
 
     override fun onDestroy() {

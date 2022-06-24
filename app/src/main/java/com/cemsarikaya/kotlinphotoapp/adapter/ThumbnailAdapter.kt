@@ -6,9 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.cemsarikaya.kotlinphotoapp.databinding.ActivityMainBinding
 import com.cemsarikaya.kotlinphotoapp.databinding.PhotoRowBinding
-
 
 
 class ThumbnailAdapter(val postArrayList: ArrayList<Uri>,private val context: Context): RecyclerView.Adapter<ThumbnailAdapter.ViewHolder>() {
@@ -29,6 +27,7 @@ class ThumbnailAdapter(val postArrayList: ArrayList<Uri>,private val context: Co
                     .centerCrop()
                     .into(holder.binding.photoImageView)
 
+
         }
 
         override fun getItemCount(): Int {
@@ -37,4 +36,6 @@ class ThumbnailAdapter(val postArrayList: ArrayList<Uri>,private val context: Co
             return postArrayList.size
 
         }
+
+
 }

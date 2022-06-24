@@ -32,9 +32,7 @@ class MainActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
-   // private var mArrayUri : ArrayList<Uri>?=null
     private lateinit var imagesAdapter : ThumbnailAdapter
-
 
 
 
@@ -141,6 +139,7 @@ class MainActivity : AppCompatActivity() {
         return if (mediaDir != null && mediaDir.exists())
             mediaDir else filesDir
     }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults:

@@ -3,9 +3,11 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.view.*
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cemsarikaya.kotlinphotoapp.databinding.GalleryRowBinding
+import com.cemsarikaya.kotlinphotoapp.model.MySingleton
 import java.io.File
 
 
@@ -25,7 +27,6 @@ class GalleryImageAdapter(val postArrayList: ArrayList<Uri>, private val context
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         var pathName  = postArrayList[position].lastPathSegment
-
         var bool = false
         Glide.with(context)
             .load(postArrayList[position])
@@ -50,7 +51,6 @@ class GalleryImageAdapter(val postArrayList: ArrayList<Uri>, private val context
         holder.binding.renameButton.setOnClickListener {
             holder.binding.galleryImageText.visibility = View.GONE
             holder.binding.renameText.visibility = View.VISIBLE
-           // holder.binding.renameText.text = Editable.Factory.getInstance().newEditable(pathName)
             holder.binding.renameButton.visibility =View.GONE
             holder.binding.renameYesButton.visibility =View.VISIBLE
         }

@@ -19,14 +19,7 @@ class GalleryActivity : AppCompatActivity() {
         binding = ActivityGalleryBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-      /*  val mArrayUri = intent.getSerializableExtra("photos") as ArrayList<*>
-
-        println(mArrayUri)
-        */
         createdGridView()
-
-
-
 
     }
 

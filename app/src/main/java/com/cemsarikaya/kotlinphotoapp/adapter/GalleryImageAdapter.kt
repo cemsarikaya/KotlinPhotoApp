@@ -1,13 +1,15 @@
 package com.cemsarikaya.kotlinphotoapp.adapter
 import android.content.Context
 import android.net.Uri
-import android.provider.OpenableColumns
-import android.view.*
-import androidx.core.net.toUri
+import android.os.Environment
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cemsarikaya.kotlinphotoapp.databinding.GalleryRowBinding
-import com.cemsarikaya.kotlinphotoapp.model.MySingleton
 import java.io.File
 
 
@@ -27,6 +29,8 @@ class GalleryImageAdapter(val postArrayList: ArrayList<Uri>, private val context
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         var pathName  = postArrayList[position].lastPathSegment
+        val uri = Uri.fromFile(postArrayList[position].path?.let { File(it) })
+        val fdelete = File(uri.path.toString())
         var bool = false
         Glide.with(context)
             .load(postArrayList[position])
@@ -35,13 +39,24 @@ class GalleryImageAdapter(val postArrayList: ArrayList<Uri>, private val context
 
            holder.binding.galleryImageText.text=pathName
 
+
         holder.binding.galleryImageView.setOnClickListener {
             bool = !bool
             if (bool == true){
                 holder.binding.deleteImageButton.visibility = View.VISIBLE
                 holder.binding.deleteImageButton.setOnClickListener {
-                    postArrayList.removeAt(holder.adapterPosition)
-                    notifyItemRemoved(holder.adapterPosition)
+                    if (fdelete.exists()) {
+                        if (fdelete.delete()) {
+                            Toast.makeText(context, "file Deleted :$pathName", Toast.LENGTH_SHORT).show()
+
+
+                        } else {
+                            Toast.makeText(context, "file not Deleted :$pathName", Toast.LENGTH_SHORT).show()
+
+                        }
+                        postArrayList.removeAt(holder.adapterPosition)
+                        notifyItemRemoved(holder.adapterPosition)
+                    }
                 }
 
             }else{
@@ -63,11 +78,29 @@ class GalleryImageAdapter(val postArrayList: ArrayList<Uri>, private val context
             pathName = holder.binding.renameText.text.toString()
             holder.binding.galleryImageText.text = pathName
 
+
         }
     }
     override fun getItemCount(): Int {
         return  postArrayList.size
 
+    }
+    fun clearMyFiles() {
+        val files = context.filesDir.listFiles()
+        if (files != null) for (file in files) {
+            file.delete()
+        }
+    }
+
+    private fun deleteTempFolder(dir: String) {
+        val myDir = File(Environment.getExternalStorageDirectory().toString() + "/" + dir)
+        if (myDir.isDirectory) {
+            val children = myDir.list()
+            for (i in children.indices) {
+                File(myDir, children[i]).delete()
+            }
+
+        }
     }
 
 

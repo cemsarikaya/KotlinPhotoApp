@@ -22,7 +22,6 @@ import com.cemsarikaya.kotlinphotoapp.databinding.ActivityMainBinding
 import com.cemsarikaya.kotlinphotoapp.model.MySingleton
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 

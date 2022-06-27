@@ -85,25 +85,6 @@ class GalleryImageAdapter(val postArrayList: ArrayList<Uri>, private val context
         return  postArrayList.size
 
     }
-    fun clearMyFiles() {
-        val files = context.filesDir.listFiles()
-        if (files != null) for (file in files) {
-            file.delete()
-        }
-    }
-
-    private fun deleteTempFolder(dir: String) {
-        val myDir = File(Environment.getExternalStorageDirectory().toString() + "/" + dir)
-        if (myDir.isDirectory) {
-            val children = myDir.list()
-            for (i in children.indices) {
-                File(myDir, children[i]).delete()
-            }
-
-        }
-    }
-
-
 
 }
 
